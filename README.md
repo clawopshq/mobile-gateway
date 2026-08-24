@@ -48,4 +48,4 @@ http://<장비 IP>:8088
 
 ## 문의
 
-[ClawOps 콘솔](https://platform.claw-ops.com) 또는 support@claw-ops.com
+[ClawOps 콘솔](https://platform.claw-ops.com) 또는 hello@claw-ops.com
