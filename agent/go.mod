@@ -1,3 +1,3 @@
-module github.com/learners-superpumped/clawops-mobile-gateway/agent
+module github.com/clawopshq/mobile-gateway/agent
 
 go 1.23

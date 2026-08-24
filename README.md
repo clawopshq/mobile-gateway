@@ -20,13 +20,13 @@
 게이트웨이 장비에서 실행합니다.
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/learners-superpumped/clawops-mobile-gateway/main/scripts/install-release.sh | sudo sh
+curl -fsSL https://raw.githubusercontent.com/clawopshq/mobile-gateway/main/scripts/install-release.sh | sudo sh
 ```
 
 특정 버전을 설치하거나 롤백하려면 버전을 지정합니다.
 
 ```sh
-curl -fsSL https://raw.githubusercontent.com/learners-superpumped/clawops-mobile-gateway/main/scripts/install-release.sh | sudo VERSION=0.1.2 sh
+curl -fsSL https://raw.githubusercontent.com/clawopshq/mobile-gateway/main/scripts/install-release.sh | sudo VERSION=0.1.2 sh
 ```
 
 ## 설치 후
