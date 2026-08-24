@@ -14,13 +14,13 @@ Bluetooth HFP(핸즈프리 통화)를 지원하는 휴대폰의 셀룰러 회선
 게이트웨이 장비에서 다음 한 줄을 붙여넣고 실행합니다.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/learners-superpumped/clawops-mobile-gateway/main/scripts/install-release.sh | sudo sh
+curl -fsSL https://raw.githubusercontent.com/clawopshq/mobile-gateway/main/scripts/install-release.sh | sudo sh
 ```
 
 특정 버전을 설치하거나 롤백하려면 버전을 지정합니다.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/learners-superpumped/clawops-mobile-gateway/main/scripts/install-release.sh | sudo VERSION=0.1.0 sh
+curl -fsSL https://raw.githubusercontent.com/clawopshq/mobile-gateway/main/scripts/install-release.sh | sudo VERSION=0.1.0 sh
 ```
 
 설치 상태를 확인합니다.

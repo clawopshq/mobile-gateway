@@ -2,7 +2,7 @@
 # ClawOps Mobile Gateway — GitHub Release 원클릭 설치기
 set -eu
 
-REPO="learners-superpumped/clawops-mobile-gateway"
+REPO="clawopshq/mobile-gateway"
 API="https://api.github.com/repos/$REPO"
 
 die() {
