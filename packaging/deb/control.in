@@ -1,7 +1,7 @@
 Package: clawops-mobile-gateway
 Version: @VERSION@
 Architecture: @ARCH@
-Maintainer: ClawOps <support@claw-ops.com>
+Maintainer: ClawOps <hello@claw-ops.com>
 Section: comm
 Priority: optional
 Depends: libc6, libssl3, libxml2, libjansson4, libsqlite3-0, libedit2, libncursesw6, libcurl4, libsrtp2-1, libuuid1, libbluetooth3, bluez, wireguard-tools
