@@ -58,7 +58,7 @@ func TestBTDevices_All(t *testing.T) {
 }
 
 func TestRunTimed_ReportsTimeout(t *testing.T) {
-	fakeBluetoothctl(t, `sleep 5`)
+	fakeBluetoothctl(t, `exec sleep 5`) // exec: sh 만 죽으면 자식 sleep 이 파이프를 잡아 5초를 다 기다린다
 	if _, ok, timedOut := runTimed(200*time.Millisecond, "bluetoothctl", "devices", "Paired"); ok || !timedOut {
 		t.Errorf("ok=%v timedOut=%v, 시간 초과로 보고해야 한다", ok, timedOut)
 	}
