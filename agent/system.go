@@ -27,10 +27,16 @@ func NewSystem() *System {
 
 // run 은 명령을 timeout 과 함께 실행하고 stdout(trim)·성공여부를 돌려준다.
 func run(timeout time.Duration, name string, args ...string) (string, bool) {
+	out, ok, _ := runTimed(timeout, name, args...)
+	return out, ok
+}
+
+// runTimed 는 run 과 같되, 실패가 시간 초과 때문인지도 돌려준다.
+func runTimed(timeout time.Duration, name string, args ...string) (out string, ok, timedOut bool) {
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
-	out, err := exec.CommandContext(ctx, name, args...).CombinedOutput()
-	return strings.TrimSpace(string(out)), err == nil
+	b, err := exec.CommandContext(ctx, name, args...).CombinedOutput()
+	return strings.TrimSpace(string(b)), err == nil, ctx.Err() == context.DeadlineExceeded
 }
 
 // ── 서비스(asterisk) ─────────────────────────────────────────────
@@ -102,15 +108,24 @@ func (s *System) BTStatus() BTStatus {
 
 // btDevices 는 bluetoothctl 로 장치 목록을 파싱한다. pairedOnly=true 면 페어링된 것만.
 func (s *System) btDevices(pairedOnly bool) []BTDev {
-	args := []string{"devices"}
+	var out string
+	var ok bool
 	if pairedOnly {
-		// ⚠️ `devices Paired` 는 BlueZ 5.65+ 문법 — Ubuntu 22.04(BlueZ 5.64)에선
-		//    "Too many arguments" 로 항상 실패해 페어링 목록이 영구히 비고,
-		//    UI 가 페어링 완료를 영영 인식하지 못한다(다음 단계가 안 열림).
-		//    `paired-devices` 는 5.64 와 그 이후 양쪽에서 동작한다.
-		args = []string{"paired-devices"}
+		// ⚠️ 페어링 목록 문법이 BlueZ 버전마다 다르고 서로 호환되지 않는다(실측):
+		//    - 5.64(Ubuntu 22.04): `paired-devices` 만 있다. `devices Paired` → "Too many arguments", exit 1
+		//    - 5.66(Debian 12)·5.72(Ubuntu 24.04): `paired-devices` 가 없다 → "Invalid command", exit 1
+		//    한쪽만 쓰면 다른 쪽에서 목록이 영구히 비어 UI 가 페어링 완료를 인식하지 못한다(다음 단계가 안 열림).
+		//    신 문법을 먼저 시도하고, 실패(exit≠0)하면 구 문법으로 내려간다.
+		//    시간 초과는 문법이 아니라 bluetoothd 무응답이라 내려가지 않는다 — 내려가면 4초 주기
+		//    상태 폴링 한 번이 8초→16초로 늘어 요청이 쌓인다.
+		var timedOut bool
+		out, ok, timedOut = runTimed(8*time.Second, "bluetoothctl", "devices", "Paired")
+		if !ok && !timedOut {
+			out, ok = run(8*time.Second, "bluetoothctl", "paired-devices")
+		}
+	} else {
+		out, ok = run(8*time.Second, "bluetoothctl", "devices")
 	}
-	out, ok := run(8*time.Second, "bluetoothctl", args...)
 	if !ok {
 		return nil
 	}
