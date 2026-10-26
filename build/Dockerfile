@@ -45,10 +45,18 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
 
 WORKDIR /usr/src
 # 소스 tarball 캐시 마운트 — 재빌드 시 재다운로드 회피(아키텍처 무관 소스라 양 아키텍처가 공유).
+# ⚠️ asterisk 는 새 버전이 나오면 옛 버전을 old-releases/ 로 옮긴다 — 고정 버전의 원래 경로가
+#    어느 날 404 가 된다(22.10.1 이 그랬다, v0.1.6 빌드 실패). 원래 경로 → old-releases 순으로 받는다.
+#    받다 실패한 빈 파일이 캐시에 남으면 다음 빌드가 그걸 믿고 tar 에서 죽으므로 임시 파일로 받아 옮긴다.
 RUN --mount=type=cache,target=/var/cache/clawops-dl \
+      set -e; \
       F="/var/cache/clawops-dl/asterisk-${ASTERISK_VERSION}.tar.gz"; \
-      [ -f "$F" ] || wget -qO "$F" \
-        "https://downloads.asterisk.org/pub/telephony/asterisk/asterisk-${ASTERISK_VERSION}.tar.gz"; \
+      B="https://downloads.asterisk.org/pub/telephony/asterisk"; \
+      if [ ! -s "$F" ]; then \
+        wget -qO "$F.part" "$B/asterisk-${ASTERISK_VERSION}.tar.gz" \
+          || wget -qO "$F.part" "$B/old-releases/asterisk-${ASTERISK_VERSION}.tar.gz"; \
+        mv "$F.part" "$F"; \
+      fi; \
       tar xzf "$F"
 WORKDIR /usr/src/asterisk-${ASTERISK_VERSION}
 
